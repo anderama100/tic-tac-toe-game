@@ -1,1 +1,35 @@
+/* CSS Document */
+.ttt .row .cell:not(:last-child) { 
+  border-right: 1px solid rgba(0, 0, 0, 0.959);
+}
 
+
+.ttt .row {
+  height: 100px;
+}
+
+.ttt .row:not(:last-child) {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.959);
+}
+
+.ttt .row .cell {
+  width: 100px;
+  height: 100px;
+  float: left;
+  text-align: center;
+  padding-top: 34px;
+}
+
+.ttt {
+  height: 300px;
+  width: 300px;
+  background-color: rgba(6, 32, 150, 0.856);
+  font-size: 25px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: rgba(22, 21, 21, 0.959);
+}
+
+
+* {
+  box-sizing: border-box;
+}
