@@ -3,42 +3,42 @@
 
   //Initializing variables, capturing event start
   var game;
-  var startBtn = document.getElementById('startButton');
+  var startBtn = document.getElementById('restartButton');
   var cntner = document.querySelector('.ttt');
   var gameSt = document.getElementById('gameState');
 
-  startBtn.addEventListener('click', start);
-  cntner.addEventListener('click', onCellClick);
+  startBtn.addEventListener('click', restart);
+  cntner.addEventListener('click', ClkTry);
 
   function TTT() {
     //starting game
-    this.results = null;
+    this.outcomes = null;
     this.state = 'playing'; 
     this.player = 'X';
     this.round = 0;
-    this.matrix = [
+    this.strct = [
       [ null, null, null],
       [ null, null, null],
       [ null, null, null],
     ];
   }
 
-    function onCellClick(event) {
+    function ClkTry(event) {
       //Function for click event
-    var target = event.target;
-    var dataset = target.dataset;
+    var obj = event.target;
+    var inset = obj.dataset;
 
 
-    if ( dataset && dataset.row ) {
+    if ( inset && inset.row ) {
 
-      var results = game.input(dataset.row, dataset.column);
+      var outcome = game.input(inset.row, inset.column);
 
-      if (results) {
-        if (results.game === 'Won') {
-          gameSt.innerHTML = 'Player ' + results.player + ' Wins!!!!';
+      if (outcome) {
+        if (outcome.game === 'Won') {
+          gameSt.innerHTML = 'Player ' + outcome.player + ' Wins!!!!';
         }
 
-        if (results.game === 'Tie') {
+        if (outcome.game === 'Tie') {
           gameSt.innerHTML = 'Tie Game';
         }
       }
@@ -50,32 +50,32 @@
     //checks input
 
     if (this.getState() === 'Over') {
-      return this.getResults();
+      return this.getOutcome();
     }
 
     if (this.setValue(row, column)) {
       if (this.checkGame(row, column)) {
         this.setState('Over');
-        this.setResults({
+        this.setOutcome({
           player: this.player,
           game: 'Won'
         });
-        return this.getResults();
+        return this.getOutcome();
       } else {
-        this.togglePlayer();      
+        this.SwitchPlayer();      
       }
 
       this.round++;
       if (this.round === 9) {
         this.setState('Over');
-        this.setResults({
+        this.setOutcome({
           game: 'Tie'
         });
 
-        return this.getResults();
+        return this.getOutcome();
       }
     }
-    return this.getResults();
+    return this.getOutcome();
   };
 
 
@@ -88,33 +88,33 @@
     return this.state;
   };
 
-  TTT.prototype.setResults = function (results) {
-    this.results = results;
+  TTT.prototype.setOutcome = function (outcomes) {
+    this.outcomes = outcomes;
   };
 
-  TTT.prototype.getResults = function () { 
-    return this.results;
+  TTT.prototype.getOutcome = function () { 
+    return this.outcomes;
   };
 
   TTT.prototype.checkGame = function (row, column) {
     //checking game
-    var matrix = this.matrix;
+    var strct = this.strct;
     var symbol = this.player;
-    var checks = [
-      checkRow(matrix, row, symbol),
-      checkColumn(matrix, column, symbol),
-      checkDiagonal(matrix, symbol),
-      checkAntiDiagonal(matrix, symbol)
+    var inspect = [
+      checkRow(strct, row, symbol),
+      checkColumn(strct, column, symbol),
+      checkDiagonal(strct, symbol),
+      checkDiagonal2(strct, symbol)
     ];
 
-    return checks.reduce(function (acc, check) { 
+    return inspect.reduce(function (acc, check) { 
       return acc + check;
     }, false);
 
 
 
-    function checkRow(matrix, row, symbol) {
-      var row = matrix[row];
+    function checkRow(strct, row, symbol) {
+      var row = strct[row];
       var length = row.length;
       for (var i = 0; i < length; i++) {
         var cell = row[i];
@@ -125,10 +125,10 @@
       return true;
     }
 
-    function checkColumn(matrix, column, symbol) {
-      var length = matrix.length;
+    function checkColumn(strct, column, symbol) {
+      var length = strct.length;
       for (var i = 0; i < length; i++) {
-        var cell = matrix[i][column];
+        var cell = strct[i][column];
         if (cell !== symbol) {
           return false;
         }
@@ -136,11 +136,11 @@
       return true;
     }
 
-    function checkDiagonal(matrix, symbol) {
+    function checkDiagonal(strct, symbol) {
 
-      var length = matrix.length;
+      var length = strct.length;
       for (var i = 0; i < length; i++) {
-        var cell = matrix[i][i];
+        var cell = strct[i][i];
         if (cell !== symbol) {
           return false;
         }
@@ -148,11 +148,11 @@
       return true;
     }
 
-    function checkAntiDiagonal(matrix, symbol) {
+    function checkDiagonal2(strct, symbol) {
 
-      var length = matrix.length;
+      var length = strct.length;
       for (var i = 0, j = length -1; i < length; i++) {
-        var cell = matrix[i][j];
+        var cell = strct[i][j];
         if (cell !== symbol) {
           return false;
         }
@@ -163,25 +163,25 @@
   };
 
   TTT.prototype.setValue = function (row, column) {
-    var matrix = this.matrix;
-    if (matrix[row][column] === null) {
-      matrix[row][column] = this.player;    
+    var strct = this.strct;
+    if (strct[row][column] === null) {
+      strct[row][column] = this.player;    
       return true;
     }
     return false;
   };
 
-  TTT.prototype.togglePlayer = function () {
+  TTT.prototype.SwitchPlayer = function () {
     this.player = this.player === 'X' ? 'O' : 'X';
   };
 
   TTT.prototype.output = function () {
-    return this.matrix;
+    return this.strct;
   };
   
-  function render(matrix) {
-    //concats X & O 
-    var values = matrix.reduce(function(array, row, rowIndex) {
+  function render(strct) {
+    //Returns cell index
+    var values = strct.reduce(function(array, row, rowIndex) {
       return array.concat(row.map(function (cell, cellIndex) {
         return {
           value: cell,
@@ -197,7 +197,7 @@
     });
   }
   
-  function start() {
+  function restart() {
     // starting & rendering
 
     game = new TTT();
@@ -208,6 +208,5 @@
 
 
 
-  start();
+  restart();
 }());
-
